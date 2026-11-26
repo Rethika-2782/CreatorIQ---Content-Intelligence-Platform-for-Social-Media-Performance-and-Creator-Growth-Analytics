@@ -1,0 +1,87 @@
+"""YouTube Data API v3 router – syncs only the logged-in user's own registered channel."""
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from ..database import get_db
+from ..deps import get_current_user
+from ..models import Creator, SocialAccount, User
+from ..services.youtube import sync_youtube_channel_to_db
+
+router = APIRouter(prefix="/api/youtube", tags=["YouTube"])
+
+
+def _get_or_create_creator(user: User, db: Session) -> Creator:
+    creator = db.scalar(select(Creator).where(Creator.user_id == user.user_id))
+    if not creator:
+        creator = Creator(user_id=user.user_id, creator_name=user.name)
+        db.add(creator)
+        db.commit()
+        db.refresh(creator)
+    return creator
+
+
+class SyncRequest(BaseModel):
+    channel_handle: Optional[str] = None
+    api_key: Optional[str] = None
+
+
+@router.post("/sync")
+def sync_my_channel(
+    body: SyncRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Sync the logged-in user's own registered YouTube channel."""
+    creator = _get_or_create_creator(current_user, db)
+    existing = db.scalar(
+        select(SocialAccount).where(
+            SocialAccount.creator_id == creator.creator_id,
+            SocialAccount.platform == "youtube",
+        )
+    )
+    handle = (
+        (body.channel_handle or "").strip()
+        or (existing.username if existing else "")
+        or (creator.website or "").strip()
+    )
+    if not handle:
+        raise HTTPException(
+            status_code=400,
+            detail="No YouTube channel handle is linked to your account. Add your channel handle in My Profile.",
+        )
+
+    account = sync_youtube_channel_to_db(db, creator.creator_id, handle, body.api_key)
+    return {
+        "status": "success",
+        "channel": account.username,
+        "platform_user_id": account.platform_user_id,
+        "subscribers": account.followers,
+        "total_posts": len(account.posts),
+        "is_live": True,
+    }
+
+
+@router.delete("/disconnect")
+def disconnect_channel(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Remove the user's linked YouTube account from the database."""
+    creator = db.scalar(select(Creator).where(Creator.user_id == current_user.user_id))
+    if not creator:
+        raise HTTPException(status_code=404, detail="No creator profile found")
+    account = db.scalar(
+        select(SocialAccount).where(
+            SocialAccount.creator_id == creator.creator_id,
+            SocialAccount.platform == "youtube",
+        )
+    )
+    if not account:
+        raise HTTPException(status_code=404, detail="No YouTube account linked")
+    db.delete(account)
+    db.commit()
+    return {"status": "disconnected"}

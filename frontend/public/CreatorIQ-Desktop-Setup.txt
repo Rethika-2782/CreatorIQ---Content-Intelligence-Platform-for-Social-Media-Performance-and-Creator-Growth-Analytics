@@ -1,0 +1,5 @@
+CreatorIQ Desktop App – Quick Launch Guide
+==========================================
+1. Open Chrome or Edge and visit http://localhost:5173 (or your deployed URL).
+2. Click the "Install CreatorIQ" icon in the browser address bar to install as a standalone Desktop App.
+3. Sign in with your Creator account to view your YouTube Studio analytics.

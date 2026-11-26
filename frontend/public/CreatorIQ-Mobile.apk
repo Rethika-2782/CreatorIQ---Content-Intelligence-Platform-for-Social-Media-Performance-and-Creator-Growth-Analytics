@@ -1,0 +1,4 @@
+CreatorIQ Android Mobile App Package (Demo Build)
+==================================================
+This file represents the CreatorIQ Android APK distribution placeholder.
+For production Android builds, wrap the Vite web app using Capacitor or TWA (Trusted Web Activity).
