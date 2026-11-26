@@ -139,21 +139,29 @@ export default function Landing() {
 
             {/* Direct Package Downloads */}
             <a
-              href="/CreatorIQ-Desktop-Setup.zip"
-              download="CreatorIQ-Desktop-Setup.zip"
+              href="/CreatorIQ-Desktop-Setup.exe"
+              download="CreatorIQ-Desktop-Setup.exe"
               className="btn-outline"
               style={{ color: "#FAF7F2", borderColor: "rgba(250,247,242,0.4)" }}
             >
-              <Icon name="download" size={16} /> Desktop Package (.zip)
+              <Icon name="download" size={16} /> Desktop App (.exe for Windows)
             </a>
-            <a
-              href="/CreatorIQ-Mobile.apk"
-              download="CreatorIQ-Mobile.apk"
+            <button
+              onClick={() => {
+                alert(
+                  "📱 How to install on your Phone:\n\n" +
+                  "Because Google Play blocks third-party APKs from web browsers, use the browser install:\n" +
+                  "1. Open https://creatoriq-content-in-gbxclply.onslate.in in Chrome on your phone.\n" +
+                  "2. Tap the 3 dots (⋮) in the top-right.\n" +
+                  "3. Tap 'Install app' or 'Add to Home screen'.\n\n" +
+                  "It installs immediately with the CreatorIQ logo and full app experience!"
+                );
+              }}
               className="btn-outline"
-              style={{ color: "#FAF7F2", borderColor: "rgba(250,247,242,0.4)" }}
+              style={{ color: "#FAF7F2", borderColor: "rgba(250,247,242,0.4)", cursor: "pointer" }}
             >
-              <Icon name="download" size={16} /> Android Direct APK
-            </a>
+              <Icon name="download" size={16} /> Mobile App (Android / iOS)
+            </button>
           </div>
         </div>
       </section>
