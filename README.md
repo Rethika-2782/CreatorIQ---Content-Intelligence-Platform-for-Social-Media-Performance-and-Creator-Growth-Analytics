@@ -1,79 +1,113 @@
-# CreatorIQ – Module 1: User Management
+# CreatorIQ – Content Intelligence Platform for Social Media Performance & Creator Growth Analytics
 
-Register, login, role-based dashboards, creator and agency profiles, account settings, admin user management.
+> **Quietly Commanding Creator Intelligence**  
+> *Author: Rethika S (Infosys Springboard Python Intern)*
 
-**Stack:** FastAPI, SQLAlchemy, Pydantic, Alembic, JWT (OAuth2 password flow), PostgreSQL, React (Vite), Recharts.
+CreatorIQ is a full-stack content intelligence and creator growth analytics platform tailored for YouTube creators. Built with an editorial Old Money design system and high-performance engineering, CreatorIQ offers real-time YouTube Data API v3 synchronization, owner-only channel metrics, video performance comparisons, CSV reports, and an AI-driven Pro Channel Strategist.
 
-```
-backend/    FastAPI app, Alembic migrations, pytest tests
-frontend/   React app
-database/   schema.sql  (full project schema, all 13 tables)
-docs/       DATABASE_SCHEMA.md, schema_diagram.png/.svg, API.md
-postman/    Postman collection (51 requests with tests)
-```
+---
 
-## 1. Database
-Create an empty PostgreSQL database:
-```sql
-CREATE DATABASE creatoriq;
-```
+## 🌟 Key Features
 
-## 2. Run the backend
+### 1. Owner-Centric YouTube Analytics
+- **Privacy First:** Eliminates public channel snooping. Creators link their YouTube handle (`@handle` or channel link) directly at registration.
+- **Real-Time YouTube Data API v3 Sync:** Pulls authentic subscriber counts, total views, published videos, video thumbnails, likes, comments, and engagement rates directly from YouTube.
+- **YouTube Studio Integration:** Quick direct link to YouTube Studio (`https://studio.youtube.com`).
+
+### 2. Performance & Content Intelligence
+- **Overview Dashboard:** Channel health KPIs, highest-viewed video highlight, content performance charts, and estimated AdSense earnings.
+- **Content Analytics:** Comprehensive table of all synced videos with search filtering, engagement rate calculation `((likes + comments) / views) * 100`, published dates, watch links, and side-by-side video comparisons.
+- **Growth & Insights:** Top-performing videos, engagement rankings, rule-based growth recommendations, and YouTube API growth limitation insights.
+- **Audience Analytics:** Public subscriber growth tracking and transparent explanations regarding demographic data boundaries.
+- **Revenue Analytics:** Illustrative AdSense revenue estimation based on real video impressions + complete CRUD logger for sponsorships and affiliate deals.
+- **Reports & CSV Exports:** Export channel summaries and complete video catalogs with views, likes, comments, and engagement rates as downloadable `.csv` files.
+
+### 3. Pro Plan – AI Channel Strategist
+- Benchmark channel metrics against top-performing channels in your niche.
+- 6-month subscriber forecasts and estimated monthly monetization potential.
+- Actionable improvement strategies for thumbnail optimization, upload cadence, and viewer retention.
+
+### 4. Bespoke Old Money UI/UX & GenZ Interactive Cursor
+- **Editorial Aesthetic:** Warm Ivory (`#FAF7F2`), Deep Espresso (`#1C1917`), Antique Gold (`#B08D57`), and Heritage Forest (`#2D4A3E`).
+- **Interactive Cursor Badge:** GenZ playful cursor follower (`✨ vibes` on idle, scaling up to `⚡ slay` on clickable elements).
+- **Cross-Platform Access:** Desktop application guide and mobile Android APK download options.
+- *Upcoming Roadmap:* Later Instagram extension will also be introduced.
+
+---
+
+## 🛠️ Technology Stack
+
+- **Frontend:** React 18, Vite, Recharts, Tailwind CSS, Axios, React Router v6.
+- **Backend:** Python 3.13, FastAPI, SQLAlchemy 2.0, Alembic, Pydantic v2, Uvicorn.
+- **Database:** SQLite (default for local development) / PostgreSQL.
+- **Authentication:** JWT (JSON Web Tokens), OAuth2 password bearer flow, Bcrypt password hashing.
+- **External Integration:** YouTube Data API v3.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Python 3.10+
+- Node.js 18+ & npm
+
+---
+
+### 1. Backend Setup
+
 ```bash
 cd backend
+
+# Create and activate virtual environment
 python -m venv venv
-venv\Scripts\activate          # Windows   (Mac/Linux: source venv/bin/activate)
+# Windows:
+venv\Scripts\activate
+# macOS/Linux:
+# source venv/bin/activate
+
+# Install dependencies
 pip install -r requirements.txt
-copy .env.example .env         # then set DATABASE_URL (your postgres password) and SECRET_KEY
-alembic upgrade head           # creates the tables
-uvicorn app.main:app --reload
+
+# Configure environment variables
+# Copy .env.example to .env
+copy .env.example .env
+
+# Run database migrations
+alembic upgrade head
+
+# Start FastAPI development server
+uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
-API docs: http://localhost:8000/docs
 
-If `DATABASE_URL` is missing it uses a local SQLite file, which is fine for a quick try.
+The FastAPI backend will start at: `http://127.0.0.1:8000`  
+Interactive API Docs (Swagger UI): `http://127.0.0.1:8000/docs`
 
-## 3. Run the frontend
+---
+
+### 2. Frontend Setup
+
 ```bash
 cd frontend
+
+# Install dependencies
 npm install
-copy .env.example .env
+
+# Start Vite development server
 npm run dev
 ```
-Open http://localhost:5173
 
-## Demo logins
-Created automatically on first start. Password for all: `Demo@1234`
+The frontend application will start at: `http://localhost:5173`
 
-| Role | Email |
-|---|---|
-| Creator | creator@creatoriq.com |
-| Agency | agency@creatoriq.com |
-| Marketing Team | marketing@creatoriq.com |
-| Administrator | admin@creatoriq.com |
+---
 
-Set `SEED_DEMO_USERS=false` in `.env` for any real deployment.
+## 🔑 YouTube Data API v3 Configuration
 
-## What each role sees
-| Role | Dashboard | Other pages |
-|---|---|---|
-| Creator | KPIs, follower growth, content performance, top posts, audience, revenue | My Profile, Settings |
-| Agency | KPIs, overall performance, platform distribution, creators overview | Agency Profile (with linked creators), Settings |
-| Marketing Team | KPIs, campaign performance, top campaigns, recent campaigns, content mix, audience insights | Settings |
-| Administrator | live user counts, recent users, plus sample growth, usage and activity | User Management, Settings |
+You can configure your YouTube API key either:
+1. **Inside the App:** Navigate to **Settings** (`/settings`) and enter your key in the **YouTube Data API v3 Configuration** card.
+2. **In `.env`:** Add `YOUTUBE_API_KEY=AIzaSy...` in `backend/.env`.
 
-Dashboard numbers are sample data (marked "Sample data" on screen) except the Administrator's user counts and recent users, which come from the database. Menu items for later modules open a "coming soon" page.
+---
 
-## Tests
-**Automated (pytest, 28 tests):**
-```bash
-cd backend
-pip install -r requirements-dev.txt
-pytest
-```
-**Postman:** import `postman/CreatorIQ_Module1.postman_collection.json`, start the backend, and run the collection with the Collection Runner (top to bottom). It covers: valid and duplicate registration, invalid input, valid and invalid login, no token, wrong role, updating your own profile, accessing another user's profile, account settings.
+## 📄 License
 
-## Docs
-- `docs/API.md` – endpoints, auth flow, status codes, examples
-- `docs/DATABASE_SCHEMA.md` – ER diagram, tables, design decisions, open questions for the mentor
-- `docs/schema_diagram.png` – schema image in the style of the mentor's reference
-- `database/schema.sql` – SQL for all 13 tables (Module 1 builds 4 of them through Alembic)
+Developed by **Rethika S** for the Infosys Springboard Internship Program. All rights reserved.
