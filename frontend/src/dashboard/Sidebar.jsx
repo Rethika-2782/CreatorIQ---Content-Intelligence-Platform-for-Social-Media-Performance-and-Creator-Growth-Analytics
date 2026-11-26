@@ -46,12 +46,14 @@ export default function Sidebar({ role }) {
   return (
     <aside className="sb">
       <div className="sb-brand">
-        <svg width="26" height="26" viewBox="0 0 28 28" aria-hidden="true">
-          <rect x="2"  y="14" width="6" height="12" rx="2" fill="#c9a84c" />
-          <rect x="11" y="8"  width="6" height="18" rx="2" fill="#8b7bf2" />
-          <rect x="20" y="2"  width="6" height="24" rx="2" fill="#fff" />
-        </svg>
-        <span>CreatorIQ</span>
+        <img
+          src="/logo.png"
+          alt="CreatorIQ Logo"
+          style={{ width: 28, height: 28, objectFit: "contain", borderRadius: 6 }}
+        />
+        <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "1.25rem", fontWeight: 700 }}>
+          CreatorIQ
+        </span>
       </div>
 
       <nav aria-label="Main">

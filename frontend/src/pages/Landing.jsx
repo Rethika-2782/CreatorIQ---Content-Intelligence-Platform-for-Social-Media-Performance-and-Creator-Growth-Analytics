@@ -1,20 +1,59 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Icon } from "../dashboard/Icons.jsx";
 
 export default function Landing() {
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isInstalled, setIsInstalled] = useState(false);
+
+  useEffect(() => {
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    });
+
+    window.addEventListener("appinstalled", () => {
+      setIsInstalled(true);
+      setDeferredPrompt(null);
+    });
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === "accepted") {
+        setIsInstalled(true);
+      }
+      setDeferredPrompt(null);
+    } else {
+      // Direct instructions for desktop and mobile
+      alert(
+        "To install CreatorIQ as a native app safely:\n\n" +
+        "• On Mobile (Android / Chrome): Tap the ⋮ Menu -> 'Add to Home screen' or 'Install app'.\n" +
+        "• On Desktop (Chrome / Edge): Click the Install icon in the address bar or Menu -> 'Install CreatorIQ'.\n\n" +
+        "This runs directly from your device without any unsigned APK security warnings!"
+      );
+    }
+  };
+
   return (
     <div className="om-landing">
       {/* Top Navigation */}
       <header className="om-nav">
         <div className="om-brand">
-          <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true">
-            <rect x="2" y="16" width="7" height="14" rx="2" fill="#B08D57" />
-            <rect x="12.5" y="9" width="7" height="21" rx="2" fill="#2D4A3E" />
-            <rect x="23" y="2" width="7" height="28" rx="2" fill="#1C1917" />
-          </svg>
+          <img
+            src="/logo.png"
+            alt="CreatorIQ - Vibe & Slay"
+            style={{ width: 44, height: 44, objectFit: "contain", borderRadius: 8 }}
+          />
           <div>
-            <strong>CreatorIQ</strong>
-            <span>EST. 2026</span>
+            <strong style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "1.45rem" }}>
+              CreatorIQ
+            </strong>
+            <span style={{ color: "#B08D57", fontWeight: 700, fontSize: "0.72rem", letterSpacing: "0.14em" }}>
+              VIBE & SLAY
+            </span>
           </div>
         </div>
         <div className="om-nav-actions">
@@ -27,6 +66,13 @@ export default function Landing() {
 
       {/* Hero Section */}
       <section className="om-hero">
+        <div style={{ marginBottom: 12 }}>
+          <img
+            src="/logo.png"
+            alt="CreatorIQ Logo"
+            style={{ width: 140, height: "auto", margin: "0 auto 14px", filter: "drop-shadow(0 4px 16px rgba(176,141,87,0.25))" }}
+          />
+        </div>
         <span className="om-tagline-pill">Quietly Commanding Creator Intelligence</span>
         <h1>
           Timeless Analytics for <em>Discerning</em> YouTube Creators.
@@ -69,37 +115,51 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Desktop & Mobile APK Download Section */}
+      {/* Cross-Platform Safe Installation Section */}
       <section id="download" className="om-section">
-        <div className="om-download-box">
+        <div className="om-download-box" style={{ background: "linear-gradient(135deg, #1C1917, #2D4A3E)", color: "#FAF7F2", borderRadius: 16, padding: "36px 40px" }}>
           <div>
-            <span className="om-tagline-pill">CROSS-PLATFORM ACCESS</span>
-            <h2>Take CreatorIQ Everywhere</h2>
-            <p className="muted">
-              Install CreatorIQ on your Desktop or download the Android Mobile APK to monitor your YouTube studio metrics on the move.
+            <span className="om-tagline-pill" style={{ color: "#B08D57", background: "rgba(176,141,87,0.15)" }}>
+              VERIFIED NATIVE & PWA INSTALLATION
+            </span>
+            <h2 style={{ color: "#FAF7F2", margin: "10px 0" }}>Take CreatorIQ Everywhere Safely</h2>
+            <p style={{ color: "rgba(250,247,242,0.85)", maxWidth: 640, lineHeight: 1.6 }}>
+              Install CreatorIQ seamlessly on your <strong>Android Phone</strong> or <strong>Desktop (Windows / Mac)</strong> without any browser security warnings or untrusted APK blocks.
             </p>
           </div>
-          <div className="om-download-btns">
+          <div className="om-download-btns" style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: 20 }}>
+            {/* 1-Click Trusted Instant Install */}
+            <button
+              onClick={handleInstallClick}
+              className="btn-gold"
+              style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: "0.95rem" }}
+            >
+              <Icon name="download" size={18} /> {isInstalled ? "App Installed ✓" : "Install App (1-Click Desktop & Mobile)"}
+            </button>
+
+            {/* Direct Package Downloads */}
             <a
               href="/CreatorIQ-Desktop-Setup.zip"
               download="CreatorIQ-Desktop-Setup.zip"
               className="btn-outline"
+              style={{ color: "#FAF7F2", borderColor: "rgba(250,247,242,0.4)" }}
             >
-              <Icon name="download" size={16} /> Desktop App (Windows / Mac)
+              <Icon name="download" size={16} /> Desktop Package (.zip)
             </a>
             <a
               href="/CreatorIQ-Mobile.apk"
               download="CreatorIQ-Mobile.apk"
-              className="btn-gold"
+              className="btn-outline"
+              style={{ color: "#FAF7F2", borderColor: "rgba(250,247,242,0.4)" }}
             >
-              <Icon name="download" size={16} /> Download Mobile APK (Android)
+              <Icon name="download" size={16} /> Android Direct APK
             </a>
           </div>
         </div>
       </section>
 
       <footer className="om-footer">
-        <strong>CreatorIQ</strong> · Quietly Commanding Creator Intelligence · Later Instagram extension will also be introduced.
+        <strong>CreatorIQ — Vibe & Slay</strong> · Quietly Commanding Creator Intelligence · Later Instagram extension will also be introduced.
       </footer>
     </div>
   );
