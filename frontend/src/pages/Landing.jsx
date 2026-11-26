@@ -81,8 +81,8 @@ export default function Landing() {
           </div>
           <div className="om-download-btns">
             <a
-              href="/CreatorIQ-Desktop-Setup.txt"
-              download="CreatorIQ-Desktop-Guide.txt"
+              href="/CreatorIQ-Desktop-Setup.zip"
+              download="CreatorIQ-Desktop-Setup.zip"
               className="btn-outline"
             >
               <Icon name="download" size={16} /> Desktop App (Windows / Mac)
