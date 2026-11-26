@@ -115,52 +115,33 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Cross-Platform Safe Installation Section */}
+      {/* Mobile App Download Section */}
       <section id="download" className="om-section">
         <div className="om-download-box" style={{ background: "linear-gradient(135deg, #1C1917, #2D4A3E)", color: "#FAF7F2", borderRadius: 16, padding: "36px 40px" }}>
           <div>
             <span className="om-tagline-pill" style={{ color: "#B08D57", background: "rgba(176,141,87,0.15)" }}>
-              VERIFIED NATIVE & PWA INSTALLATION
+              MOBILE CREATOR SUITE
             </span>
-            <h2 style={{ color: "#FAF7F2", margin: "10px 0" }}>Take CreatorIQ Everywhere Safely</h2>
+            <h2 style={{ color: "#FAF7F2", margin: "10px 0" }}>Take CreatorIQ Everywhere</h2>
             <p style={{ color: "rgba(250,247,242,0.85)", maxWidth: 640, lineHeight: 1.6 }}>
-              Install CreatorIQ seamlessly on your <strong>Android Phone</strong> or <strong>Desktop (Windows / Mac)</strong> without any browser security warnings or untrusted APK blocks.
+              Download the <strong>CreatorIQ Mobile App (APK)</strong> for Android or install it instantly on your phone to track channel performance, view video engagement, and monitor subscriber analytics on the go.
             </p>
           </div>
           <div className="om-download-btns" style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: 20 }}>
-            {/* 1-Click Trusted Instant Install */}
-            <button
-              onClick={handleInstallClick}
+            <a
+              href="/CreatorIQ-Mobile.apk"
+              download="CreatorIQ-Mobile.apk"
               className="btn-gold"
               style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: "0.95rem" }}
             >
-              <Icon name="download" size={18} /> {isInstalled ? "App Installed ✓" : "Install App (1-Click Desktop & Mobile)"}
-            </button>
-
-            {/* Direct Package Downloads */}
-            <a
-              href="/CreatorIQ-Desktop-Setup.exe"
-              download="CreatorIQ-Desktop-Setup.exe"
+              <Icon name="download" size={18} /> Download Mobile APK (Android)
+            </a>
+            <button
+              onClick={handleInstallClick}
               className="btn-outline"
               style={{ color: "#FAF7F2", borderColor: "rgba(250,247,242,0.4)" }}
             >
-              <Icon name="download" size={16} /> Desktop App (.exe for Windows)
-            </a>
-            <button
-              onClick={() => {
-                alert(
-                  "📱 How to install on your Phone:\n\n" +
-                  "Because Google Play blocks third-party APKs from web browsers, use the browser install:\n" +
-                  "1. Open https://creatoriq-content-in-gbxclply.onslate.in in Chrome on your phone.\n" +
-                  "2. Tap the 3 dots (⋮) in the top-right.\n" +
-                  "3. Tap 'Install app' or 'Add to Home screen'.\n\n" +
-                  "It installs immediately with the CreatorIQ logo and full app experience!"
-                );
-              }}
-              className="btn-outline"
-              style={{ color: "#FAF7F2", borderColor: "rgba(250,247,242,0.4)", cursor: "pointer" }}
-            >
-              <Icon name="download" size={16} /> Mobile App (Android / iOS)
+              <Icon name="download" size={16} /> {isInstalled ? "App Installed ✓" : "Add to Mobile Home Screen"}
             </button>
           </div>
         </div>
