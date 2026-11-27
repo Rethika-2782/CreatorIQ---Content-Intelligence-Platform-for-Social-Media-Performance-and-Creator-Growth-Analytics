@@ -148,7 +148,7 @@ class Post(Base):
     content_type: Mapped[str | None] = mapped_column(String(50))  # video, reel, short
     caption: Mapped[str | None] = mapped_column(Text)
     hashtags: Mapped[str | None] = mapped_column(Text)
-    thumbnail_url: Mapped[str | None] = mapped_column(String(255))
+    thumbnail_url: Mapped[str | None] = mapped_column(Text)
     post_url: Mapped[str | None] = mapped_column(Text)
     published_at: Mapped[datetime | None] = mapped_column(DateTime)
     fetched_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
