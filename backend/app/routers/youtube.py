@@ -1,4 +1,7 @@
 """YouTube Data API v3 router – syncs only the logged-in user's own registered channel."""
+import json
+import logging
+import urllib.request
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -6,10 +9,13 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from ..config import YOUTUBE_API_KEY
 from ..database import get_db
 from ..deps import get_current_user
 from ..models import Creator, SocialAccount, User
 from ..services.youtube import sync_youtube_channel_to_db
+
+log = logging.getLogger("creatoriq.youtube.router")
 
 router = APIRouter(prefix="/api/youtube", tags=["YouTube"])
 
@@ -27,6 +33,28 @@ def _get_or_create_creator(user: User, db: Session) -> Creator:
 class SyncRequest(BaseModel):
     channel_handle: Optional[str] = None
     api_key: Optional[str] = None
+
+
+@router.get("/test-api")
+def test_youtube_api():
+    """Diagnostic: test whether the YouTube API is reachable from this server."""
+    key = (YOUTUBE_API_KEY or "").strip()
+    if not key:
+        return {"status": "error", "detail": "No YOUTUBE_API_KEY configured on server"}
+    try:
+        url = f"https://www.googleapis.com/youtube/v3/channels?part=snippet&forHandle=@YouTube&key={key}"
+        req = urllib.request.Request(url, headers={"User-Agent": "CreatorIQ/2.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        items = data.get("items", [])
+        return {
+            "status": "ok",
+            "api_reachable": True,
+            "channel_found": len(items) > 0,
+            "channel_title": items[0]["snippet"]["title"] if items else None,
+        }
+    except Exception as e:
+        return {"status": "error", "detail": f"{type(e).__name__}: {str(e)}"}
 
 
 @router.post("/sync")
@@ -55,7 +83,11 @@ def sync_my_channel(
                 detail="No YouTube channel handle is linked to your account. Add your channel handle in My Profile.",
             )
 
-        account = sync_youtube_channel_to_db(db, creator.creator_id, handle, body.api_key)
+        log.info("Starting YouTube sync for creator=%s handle=%s", creator.creator_id, handle)
+        account = sync_youtube_channel_to_db(
+            db, creator.creator_id, handle, body.api_key, max_videos=50
+        )
+        log.info("YouTube sync complete: %s posts", len(account.posts))
         return {
             "status": "success",
             "channel": account.username,

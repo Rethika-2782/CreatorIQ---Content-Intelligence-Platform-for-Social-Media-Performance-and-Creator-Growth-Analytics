@@ -30,6 +30,7 @@ export default function Dashboard() {
   const [syncing, setSyncing] = useState(false);
   const [syncMsg, setSyncMsg] = useState("");
   const [error, setError] = useState("");
+  const [channelHandle, setChannelHandle] = useState("");
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
@@ -55,16 +56,19 @@ export default function Dashboard() {
     loadData();
   }, []);
 
-  const handleSync = async () => {
+  const handleSync = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
     setSyncing(true);
     setSyncMsg("");
     setError("");
     const storedApiKey = localStorage.getItem("creatoriq_yt_api_key") || undefined;
     try {
       const res = await api.post("/api/youtube/sync", {
+        channel_handle: channelHandle.trim() || undefined,
         api_key: storedApiKey,
       });
       setSyncMsg(`Channel synced: ${res.data.channel} (${res.data.total_posts} videos)`);
+      setChannelHandle("");
       await loadData();
     } catch (err) {
       setError(errorMessage(err));
@@ -118,12 +122,21 @@ export default function Dashboard() {
           </div>
           <h2>No YouTube Channel Connected Yet</h2>
           <p className="muted" style={{ maxWidth: 520, margin: "8px auto 20px" }}>
-            Connect your YouTube channel handle to stream authentic view counts, likes, engagement metrics,
-            and exportable reports.
+            Enter your YouTube channel handle or URL below to automatically sync your videos, views, likes, and analytics.
           </p>
-          <button className="btn" onClick={handleSync} disabled={syncing}>
-            <Icon name="refresh" size={16} /> {syncing ? "Connecting..." : "Sync Channel Now"}
-          </button>
+          <form onSubmit={handleSync} style={{ display: "flex", gap: 10, justifyContent: "center", maxWidth: 460, margin: "0 auto", flexWrap: "wrap" }}>
+            <input
+              type="text"
+              value={channelHandle}
+              onChange={(e) => setChannelHandle(e.target.value)}
+              placeholder="e.g. @VillageCookingChannel or channel URL"
+              style={{ flex: "1 1 240px", padding: "10px 14px", borderRadius: 8, border: "1px solid var(--line)", background: "var(--surface)", color: "var(--text)" }}
+              required
+            />
+            <button type="submit" className="btn" disabled={syncing || !channelHandle.trim()}>
+              <Icon name="refresh" size={16} /> {syncing ? "Syncing..." : "Sync Channel"}
+            </button>
+          </form>
           <div style={{ marginTop: 24, fontSize: "0.85rem", color: "var(--muted)" }}>
             Tip: Make sure your YouTube Data API v3 key is placed in <code>backend/.env</code> or channel handle is set in My Profile.
           </div>

@@ -26,7 +26,7 @@ def _yt_get(url: str) -> dict:
     """Execute a GET request against YouTube Data API v3 and parse JSON."""
     req = urllib.request.Request(url, headers={"User-Agent": "CreatorIQ/2.0"})
     try:
-        with urllib.request.urlopen(req, timeout=12) as resp:
+        with urllib.request.urlopen(req, timeout=15) as resp:
             return json.loads(resp.read().decode("utf-8"))
     except HTTPError as err:
         body = err.read().decode("utf-8", errors="ignore")
@@ -205,9 +205,10 @@ def sync_youtube_channel_to_db(
     creator_id: int,
     channel_handle: str,
     api_key: str | None = None,
+    max_videos: int = 50,
 ) -> SocialAccount:
-    """Synchronizes real YouTube channel and its full video history into the database."""
-    data = fetch_youtube_channel_data(channel_handle, api_key)
+    """Synchronizes real YouTube channel and its video history into the database."""
+    data = fetch_youtube_channel_data(channel_handle, api_key, max_videos=max_videos)
 
     account = db.scalar(
         select(SocialAccount).where(

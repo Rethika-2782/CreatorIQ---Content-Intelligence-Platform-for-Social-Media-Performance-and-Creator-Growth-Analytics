@@ -4,17 +4,10 @@ import AuthLayout from "../components/AuthLayout.jsx";
 import { useAuth } from "../AuthContext.jsx";
 import { errorMessage } from "../api";
 
-const ROLES = [
-  { value: "creator", title: "Creator", text: "I make content" },
-  { value: "agency", title: "Agency", text: "I manage creators" },
-  { value: "marketing_team", title: "Marketing Team", text: "I manage brand campaigns" },
-  { value: "admin", title: "Administrator", text: "I manage the platform" },
-];
-
 export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "", role: "creator", youtube_handle: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -43,8 +36,7 @@ export default function Register() {
         name: form.name.trim(),
         email: form.email.trim(),
         password: form.password,
-        role: form.role,
-        youtube_handle: form.youtube_handle.trim() || undefined,
+        role: "creator",
       });
       navigate("/login");
     } catch (err) {
@@ -56,21 +48,10 @@ export default function Register() {
 
   return (
     <AuthLayout>
-      <h1>Create your account</h1>
+      <h1>Create your creator account</h1>
       <p className="sub">Start tracking your content in a few minutes.</p>
 
       <form onSubmit={onSubmit} noValidate>
-        <fieldset className="roles">
-          <legend>I am a</legend>
-          {ROLES.map((r) => (
-            <label key={r.value} className={"role" + (form.role === r.value ? " active" : "")}>
-              <input type="radio" name="role" value={r.value} checked={form.role === r.value} onChange={set("role")} />
-              <strong>{r.title}</strong>
-              <span>{r.text}</span>
-            </label>
-          ))}
-        </fieldset>
-
         <label>
           Full name
           <input value={form.name} onChange={set("name")} placeholder="Your full name" autoComplete="name" />
@@ -78,10 +59,6 @@ export default function Register() {
         <label>
           Email
           <input type="email" value={form.email} onChange={set("email")} placeholder="you@example.com" autoComplete="email" />
-        </label>
-        <label>
-          YouTube Channel Handle or URL {form.role === "creator" ? "(for your analytics)" : "(optional)"}
-          <input value={form.youtube_handle} onChange={set("youtube_handle")} placeholder="e.g. @yourchannel or https://youtube.com/@yourchannel" />
         </label>
         <label>
           Password

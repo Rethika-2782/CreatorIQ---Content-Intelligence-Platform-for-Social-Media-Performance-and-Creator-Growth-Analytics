@@ -21,6 +21,12 @@ export function errorMessage(err) {
       .join(". ");
   }
   if (err?.code === "ERR_NETWORK") return "Cannot reach the server. Is the backend running?";
+  if (err?.code === "ECONNABORTED" || err?.message?.includes("timeout"))
+    return "Request timed out. The server may be starting up (free tier cold start). Please wait 30 seconds and try again.";
+  if (err?.response?.status === 504)
+    return "Gateway timeout — the server took too long to respond. Please wait a moment and try again.";
+  if (err?.response?.status)
+    return `Server error (${err.response.status}). Please try again.`;
   return "Something went wrong. Please try again.";
 }
 
