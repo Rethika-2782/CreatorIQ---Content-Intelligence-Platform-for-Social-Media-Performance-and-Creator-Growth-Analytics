@@ -36,33 +36,40 @@ def sync_my_channel(
     db: Session = Depends(get_db),
 ):
     """Sync the logged-in user's own registered YouTube channel."""
-    creator = _get_or_create_creator(current_user, db)
-    existing = db.scalar(
-        select(SocialAccount).where(
-            SocialAccount.creator_id == creator.creator_id,
-            SocialAccount.platform == "youtube",
+    try:
+        creator = _get_or_create_creator(current_user, db)
+        existing = db.scalar(
+            select(SocialAccount).where(
+                SocialAccount.creator_id == creator.creator_id,
+                SocialAccount.platform == "youtube",
+            )
         )
-    )
-    handle = (
-        (body.channel_handle or "").strip()
-        or (existing.username if existing else "")
-        or (creator.website or "").strip()
-    )
-    if not handle:
-        raise HTTPException(
-            status_code=400,
-            detail="No YouTube channel handle is linked to your account. Add your channel handle in My Profile.",
+        handle = (
+            (body.channel_handle or "").strip()
+            or (existing.username if existing else "")
+            or (creator.website or "").strip()
         )
+        if not handle:
+            raise HTTPException(
+                status_code=400,
+                detail="No YouTube channel handle is linked to your account. Add your channel handle in My Profile.",
+            )
 
-    account = sync_youtube_channel_to_db(db, creator.creator_id, handle, body.api_key)
-    return {
-        "status": "success",
-        "channel": account.username,
-        "platform_user_id": account.platform_user_id,
-        "subscribers": account.followers,
-        "total_posts": len(account.posts),
-        "is_live": True,
-    }
+        account = sync_youtube_channel_to_db(db, creator.creator_id, handle, body.api_key)
+        return {
+            "status": "success",
+            "channel": account.username,
+            "platform_user_id": account.platform_user_id,
+            "subscribers": account.followers,
+            "total_posts": len(account.posts),
+            "is_live": True,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Sync error: {type(e).__name__}: {str(e)}")
 
 
 @router.delete("/disconnect")
