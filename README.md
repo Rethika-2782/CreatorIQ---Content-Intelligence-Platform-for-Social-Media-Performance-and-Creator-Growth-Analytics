@@ -3,6 +3,7 @@
 > **Quietly Commanding Creator Intelligence**  
 > *Author: Rethika S (Infosys Springboard Python Intern)*
 
+Live Link : https://frontend-two-wheat-87.vercel.app
 Demo Video : https://youtu.be/7HRMyA0ul_k
 
 CreatorIQ is a full-stack content intelligence and creator growth analytics platform tailored for YouTube creators. Built with an editorial Old Money design system and high-performance engineering, CreatorIQ offers real-time YouTube Data API v3 synchronization, owner-only channel metrics, video performance comparisons, CSV reports, and an AI-driven Pro Channel Strategist.
